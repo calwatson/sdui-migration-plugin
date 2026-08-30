@@ -58,6 +58,8 @@ Registering is not installing. The catalog only makes the plugin *offerable*; un
 sdui-migration-marketplace with 1 plugin(s)
 ```
 
+Install resolves a **git revision**, so the folder must be a git repo with at least one commit. Uncommitted edits are invisible to the installed copy: commit, then refresh the marketplace and reinstall to pick up changes.
+
 Keep `version` identical in both manifests. Cursor serves the catalog's version, so bumping only `plugin.json` ships a stale entry.
 
 ### Alternative: load directly, no install click
