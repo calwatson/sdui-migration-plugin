@@ -1,0 +1,16 @@
+{
+  "version": 1,
+  "hooks": {
+    "afterFileEdit": [
+      {
+        "command": "./scripts/after-composer-edit.py"
+      }
+    ],
+    "stop": [
+      {
+        "command": "./scripts/stop-verify.py",
+        "loop_limit": 1
+      }
+    ]
+  }
+}

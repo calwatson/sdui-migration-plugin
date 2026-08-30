@@ -1,0 +1,23 @@
+---
+description: Hard seams for SDUI migrations. Load sdui-architecture before composing screens or mounting a host.
+alwaysApply: true
+---
+
+# SDUI seams
+
+When the task involves server-driven UI, screen composition, layout-service, SDUI hosts, or migrating a UI flow onto JSON screens:
+
+1. Read the `sdui-architecture` skill before writing code.
+2. If the user has not named a flow, follow `sdui-plan-migration` (it may launch map-domains). Do not compose until they confirm an island.
+3. To migrate a chosen flow, follow `sdui-migrate-flow` (it may launch inventory-ui, compose-screen, mount-host).
+
+Hard boundaries:
+
+- Domain APIs do not emit UI JSON.
+- layout-service composes trees (GET only). Hosts fetch, validate, and render.
+- Do not POST mutations through layout-service. Same-origin `http` actions go through a shell BFF.
+- Do not dump the whole app onto `/s/:id`. Native chrome and unrelated routes stay in the existing app.
+- Tailwind is not the SDUI contract. Unknown component types must fail `validateScreen`.
+- Do not skip contract validation on composed trees.
+
+Host means **their existing app**, not a greenfield Tortise deploy. Next.js rewrites are one BFF shape, not the only one.

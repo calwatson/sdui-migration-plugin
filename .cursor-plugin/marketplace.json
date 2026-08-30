@@ -1,0 +1,21 @@
+{
+  "name": "sdui-migration-marketplace",
+  "owner": {
+    "name": "Cal Watson"
+  },
+  "metadata": {
+    "description": "SDUI migration plugin: hybrid host, layout-service composers, shell BFF."
+  },
+  "plugins": [
+    {
+      "name": "sdui-migration-plugin",
+      "source": ".",
+      "description": "Migrate existing apps onto SDUI one flow at a time.",
+      "version": "0.1.0",
+      "license": "MIT",
+      "keywords": ["sdui", "layout-service", "migration", "bff"],
+      "category": "development",
+      "tags": ["sdui", "migration", "architecture"]
+    }
+  ]
+}

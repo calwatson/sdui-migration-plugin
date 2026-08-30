@@ -1,0 +1,16 @@
+{
+  "name": "sdui-migration-plugin",
+  "version": "0.1.0",
+  "description": "Migrate existing apps onto SDUI: hybrid host, layout-service registry and ports, shell BFF. One flow at a time; customer APIs stay domain.",
+  "author": {
+    "name": "Cal Watson"
+  },
+  "license": "MIT",
+  "keywords": [
+    "sdui",
+    "layout-service",
+    "migration",
+    "bff",
+    "server-driven-ui"
+  ]
+}
