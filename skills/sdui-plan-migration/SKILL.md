@@ -15,7 +15,7 @@ A **domain** is a bounded context around resources and APIs (catalog, orders, ac
 
 ## Sequence
 
-1. **Scan the app** — Launch `map-domains` (or do it yourself if the app is tiny). Cover routes/nav, feature folders, API clients, and chrome vs page body. Do not stop at the first list page.
+1. **Scan the app** — Launch `map-domains` (or do it yourself if the app is tiny). Cover routes/nav, feature folders, API clients, chrome vs page body, and which backend serves each domain. Do not stop at the first list page.
 2. **Group** — Cluster routes and fetches into domains. Then name the flows that cross those surfaces. A flow that spans two domains is still one flow; it will need two ports, not two migrations.
 3. **Score each flow** — Use the rubric below. Stay native is a valid outcome.
 4. **Recommend** — Rank a backlog. Pick **one** first flow. Stop and confirm with the user before `sdui-migrate-flow` composes anything.
@@ -41,26 +41,29 @@ Keep **native** (or defer):
 
 A domain can be a good port owner even when none of its flows should migrate yet.
 
+Backend stack does not change a flow's fit. Record whether the Scute track applies (see `scute-migrate-domain`) so the island's scope is honest, but do not rank a flow higher because its backend is Java.
+
 ## Output
 
 ```markdown
 # SDUI migration plan
 
 ## Domains
-| Domain | Resources / GETs | Used by flows | Notes |
-| --- | --- | --- | --- |
+| Domain | Resources / GETs | Used by flows | Backend stack | Scute track | Notes |
+| --- | --- | --- | --- | --- | --- |
 
 ## Flows (ranked)
 | Rank | Flow | Screen ids (proposed) | Domain ports | Writes (BFF?) | Fit | Why |
 | --- | --- | --- | --- | --- | --- | --- |
 
-Fit: `first` | `later` | `native`.
+Fit: `first` | `later` | `native`. Scute track: `yes` (Java/Spring, convertible) | `no` (other stack, third party, or already a hexagon).
 
 ## First island
 - Flow:
 - Why this one:
 - Surfaces that stay native in the same routes (chrome, etc.):
 - Registry gap for this flow:
+- Domain slice: (base package and endpoints if the Scute track applies, else why not)
 
 ## Out of scope
 - (chrome, auth, and any flow marked native, with one-line why)

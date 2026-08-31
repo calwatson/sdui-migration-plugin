@@ -1,13 +1,14 @@
 """Shared path matching for the SDUI hooks.
 
-Both hooks answer one question: did this payload touch a file that *composes a
-screen tree*? Matching is deliberately narrow. A nag that fires on unrelated
-work gets ignored, which is worse than no nag at all.
+Both hooks answer two questions: did this payload touch a file that *composes a
+screen tree*, or one *inside a hexagon*? Matching is deliberately narrow. A nag
+that fires on unrelated work gets ignored, which is worse than no nag at all.
 """
 
 from __future__ import annotations
 
 import posixpath
+from collections.abc import Callable
 
 # Only keys whose values are genuinely file paths. Walking arbitrary strings
 # makes any prose mentioning a composer look like a file edit.
@@ -18,6 +19,10 @@ CODE_SUFFIXES = {".ts", ".tsx", ".js", ".jsx", ".mjs", ".cjs"}
 # A composer lives in a file named for it, or in a directory of them.
 COMPOSER_STEMS = {"screens", "registry", "composer", "composers"}
 COMPOSER_DIRS = {"screens", "composers"}
+
+# Hexagon source lives in a package named for the ring it belongs to. Java-only,
+# so a `domain/` folder of TypeScript models in the frontend does not fire.
+HEXAGON_DIRS = {"domain", "application", "adapter", "hexagon"}
 
 
 def _normalize(value: str) -> str:
@@ -40,6 +45,14 @@ def _is_composer_path(value: str) -> bool:
     return any(part in COMPOSER_DIRS for part in posixpath.dirname(path).split("/"))
 
 
+def _is_hexagon_path(value: str) -> bool:
+    path = _normalize(value)
+    if not path.endswith(".java"):
+        return False
+
+    return any(part in HEXAGON_DIRS for part in posixpath.dirname(path).split("/"))
+
+
 def collect_path_values(payload: object) -> list[str]:
     found: list[str] = []
 
@@ -58,10 +71,19 @@ def collect_path_values(payload: object) -> list[str]:
     return found
 
 
-def touched_composers(payload: object) -> list[str]:
-    """Composer-ish paths in the payload, deduped and in first-seen order."""
+def _touched(payload: object, matches: Callable[[str], bool]) -> list[str]:
     seen: dict[str, None] = {}
     for value in collect_path_values(payload):
-        if _is_composer_path(value):
+        if matches(value):
             seen.setdefault(value, None)
     return list(seen)
+
+
+def touched_composers(payload: object) -> list[str]:
+    """Composer-ish paths in the payload, deduped and in first-seen order."""
+    return _touched(payload, _is_composer_path)
+
+
+def touched_hexagon(payload: object) -> list[str]:
+    """Hexagon Java paths in the payload, deduped and in first-seen order."""
+    return _touched(payload, _is_hexagon_path)

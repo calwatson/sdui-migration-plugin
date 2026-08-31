@@ -1,15 +1,20 @@
 ---
-description: Hard seams for SDUI migrations. Load sdui-architecture before composing screens or mounting a host.
+description: Hard seams for SDUI and Scute migrations. Load sdui-architecture before composing screens or mounting a host, scute-hexagon before touching the domain.
 alwaysApply: true
 ---
 
-# SDUI seams
+# SDUI and Scute seams
 
 When the task involves server-driven UI, screen composition, layout-service, SDUI hosts, or migrating a UI flow onto JSON screens:
 
 1. Read the `sdui-architecture` skill before writing code.
 2. If the user has not named a flow, follow `sdui-plan-migration` (it may launch map-domains). Do not compose until they confirm an island.
 3. To migrate a chosen flow, follow `sdui-migrate-flow` (it may launch inventory-ui, compose-screen, mount-host).
+
+When the task also converts the backend behind that flow to a hexagon:
+
+4. Read `scute-hexagon` before writing Java. Follow `scute-migrate-domain` (it may launch inventory-domain, hexagon-slice).
+5. That track is for **Java/Spring** backends only, one island's slice at a time. Any other stack keeps its existing APIs as the domain.
 
 Hard boundaries:
 
@@ -19,5 +24,8 @@ Hard boundaries:
 - Do not dump the whole app onto `/s/:id`. Native chrome and unrelated routes stay in the existing app.
 - Tailwind is not the SDUI contract. Unknown component types must fail `validateScreen`.
 - Do not skip contract validation on composed trees.
+- Converting a domain does not change its HTTP contract. Same paths, methods, and field names, so composers and the BFF keep working.
+- No Spring, JPA, servlet, or Hibernate types inside `domain` or `application`. The ArchUnit gate is scoped to converted packages, never pointed at legacy ones.
+- Thin hexagon first: outbound adapters delegate to existing services. Persistence rewrites are not part of the first slice.
 
-Host means **their existing app**, not a greenfield Tortise deploy. Next.js rewrites are one BFF shape, not the only one.
+Host means **their existing app**, not a greenfield Tortise deploy. Next.js rewrites are one BFF shape, not the only one. Scute is a target the customer adopts, but the kernel is vendored into their packages, not their code moved into `io.scute`.

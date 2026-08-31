@@ -1,7 +1,7 @@
 {
   "name": "sdui-migration-plugin",
-  "version": "0.1.0",
-  "description": "Migrate existing apps onto SDUI: hybrid host, layout-service registry and ports, shell BFF. One flow at a time; customer APIs stay domain.",
+  "version": "0.2.0",
+  "description": "Migrate existing apps onto SDUI: hybrid host, layout-service registry and ports, shell BFF, plus an optional Scute hexagon for the Java/Spring domain behind each island. One flow at a time; endpoint contracts stay put.",
   "author": {
     "name": "Cal Watson"
   },
@@ -11,6 +11,9 @@
     "layout-service",
     "migration",
     "bff",
-    "server-driven-ui"
+    "server-driven-ui",
+    "scute",
+    "hexagonal",
+    "spring"
   ]
 }

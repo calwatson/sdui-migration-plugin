@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Fail-open: remind validateScreen when a screen composer is edited."""
+"""Fail-open: remind validateScreen on composer edits, ArchUnit on hexagon edits."""
 
 from __future__ import annotations
 
@@ -9,11 +9,17 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
-from _sdui_paths import touched_composers  # noqa: E402
+from _sdui_paths import touched_composers, touched_hexagon  # noqa: E402
 
-REMINDER = (
+COMPOSER_REMINDER = (
     "Composed SDUI trees must pass validateScreen against the host component "
     "registry. Use the sdui-verify skill; do not ship unknown types or extra props."
+)
+
+HEXAGON_REMINDER = (
+    "Hexagon code must keep domain and application free of Spring, JPA, servlet, "
+    "and Hibernate types, and the endpoint contract unchanged. Use the scute-hexagon "
+    "skill; the ArchUnit gate stays scoped to the converted base package."
 )
 
 
@@ -24,8 +30,14 @@ def main() -> None:
         print("{}")
         return
 
+    reminders = []
     if touched_composers(payload):
-        print(json.dumps({"additional_context": REMINDER}))
+        reminders.append(COMPOSER_REMINDER)
+    if touched_hexagon(payload):
+        reminders.append(HEXAGON_REMINDER)
+
+    if reminders:
+        print(json.dumps({"additional_context": " ".join(reminders)}))
         return
 
     print("{}")

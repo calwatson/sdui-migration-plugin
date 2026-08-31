@@ -34,7 +34,18 @@ CASES: list[tuple[str, dict, bool]] = [
     (EDIT, {"file_path": "/app/src/button.css"}, False),
     (EDIT, {"file_path": "/app/screenshots/a.ts"}, False),
     (EDIT, {}, False),
+    # Hexagon rings, Java only.
+    (EDIT, {"file_path": "/api/src/main/java/com/acme/catalog/domain/Product.java"}, True),
+    (EDIT, {"file_path": "/api/src/main/java/com/acme/catalog/application/ListProductsService.java"}, True),
+    (EDIT, {"file_path": "/api/src/main/java/com/acme/catalog/application/port/out/Products.java"}, True),
+    (EDIT, {"file_path": "/api/src/main/java/com/acme/catalog/adapter/in/web/ProductController.java"}, True),
+    (EDIT, {"file_path": "/api/src/main/java/com/acme/catalog/adapter/out/legacy/ProductsAdapter.java"}, True),
+    (EDIT, {"file_path": "/api/src/main/java/com/acme/hexagon/UseCase.java"}, True),
+    (EDIT, {"file_path": "/api/src/main/java/com/acme/legacy/CatalogService.java"}, False),
+    (EDIT, {"file_path": "/api/src/main/resources/application.yml"}, False),
+    (EDIT, {"file_path": "/app/src/domain/order.ts"}, False),
     (STOP, {"edits": [{"path": "/app/src/screens.ts"}]}, True),
+    (STOP, {"edits": [{"path": "/api/src/main/java/com/acme/catalog/domain/Order.java"}]}, True),
     (STOP, {"summary": "discussed the composer design"}, False),
     (STOP, {"edits": [{"path": "/app/a.css"}]}, False),
 ]
@@ -77,9 +88,22 @@ def main() -> int:
     if "+2 more" not in out:
         failures.append(f"stop hook did not truncate long path lists: {out}")
 
+    both = json.dumps(
+        {
+            "edits": [
+                {"path": "/app/src/screens.ts"},
+                {"path": "/api/src/main/java/com/acme/catalog/domain/Order.java"},
+            ]
+        }
+    )
+    for script, first, second in ((EDIT, "validateScreen", "ArchUnit"), (STOP, "Composer files", "Hexagon files")):
+        _, out, _ = run(script, both)
+        if first not in out or second not in out:
+            failures.append(f"{script} did not report both kinds of edit: {out}")
+
     for line in failures:
         print(f"FAIL {line}")
-    total = len(CASES) + len(MALFORMED) + 2
+    total = len(CASES) + len(MALFORMED) + 4
     print(f"{total - len(failures)}/{total} passed")
     return 1 if failures else 0
 

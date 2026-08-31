@@ -4,18 +4,18 @@
     "name": "Cal Watson"
   },
   "metadata": {
-    "description": "SDUI migration plugin: hybrid host, layout-service composers, shell BFF."
+    "description": "SDUI migration plugin: hybrid host, layout-service composers, shell BFF, Scute hexagon for the domain."
   },
   "plugins": [
     {
       "name": "sdui-migration-plugin",
       "source": ".",
-      "description": "Migrate existing apps onto SDUI one flow at a time.",
-      "version": "0.1.0",
+      "description": "Migrate existing apps onto SDUI one flow at a time, converting the Java/Spring domain behind each island to a Scute hexagon.",
+      "version": "0.2.0",
       "license": "MIT",
-      "keywords": ["sdui", "layout-service", "migration", "bff"],
+      "keywords": ["sdui", "layout-service", "migration", "bff", "scute", "hexagonal"],
       "category": "development",
-      "tags": ["sdui", "migration", "architecture"]
+      "tags": ["sdui", "migration", "architecture", "hexagonal"]
     }
   ]
 }

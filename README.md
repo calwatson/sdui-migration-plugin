@@ -1,18 +1,18 @@
 # sdui-migration-plugin
 
-Cursor plugin for migrating **existing apps** onto a server-driven UI split: the customer app stays the shell; layout-service composes screen JSON; writes go through a host BFF.
+Cursor plugin for migrating **existing apps** onto a server-driven UI split: the customer app stays the shell; layout-service composes screen JSON; writes go through a host BFF. On Java/Spring backends it also converts the domain slice behind each migrated flow into a Scute hexagon.
 
-Scute, Tortise, and SDUI Studio are a **reference implementation**, not what the customer deploys. This plugin must work in their repo without those folders.
+Tortise and SDUI Studio are a **reference implementation**, not what the customer deploys. This plugin must work in their repo without those folders. Scute is different: it is a domain architecture the customer adopts, with its kernel vendored into their packages rather than pulled as a dependency.
 
 ## Ultimate goal
 
-Keep their chrome, auth, and APIs. Convert **one flow** at a time onto versioned screen trees that hosts validate before render.
+Keep their chrome, auth, and endpoint contracts. Convert **one flow** at a time onto versioned screen trees that hosts validate before render, and the Java slice behind it into ports, use cases, and adapters.
 
 ## Components
 
 ### Rule
 
-- `rules/sdui-seams.mdc` (always applied) — hard seams; load `sdui-architecture` before coding SDUI work.
+- `rules/sdui-seams.mdc` (always applied) — hard seams; load `sdui-architecture` before coding SDUI work, `scute-hexagon` before touching the domain.
 
 ### Skills
 
@@ -24,18 +24,20 @@ Keep their chrome, auth, and APIs. Convert **one flow** at a time onto versioned
 | `sdui-host-hybrid` | Host routing, chrome, mounting `SduiRenderer` |
 | `sdui-layout-ports` | Composers, registry, domain ports |
 | `sdui-bff-io` | Same-origin writes, BFF mapping |
-| `sdui-verify` | Before finishing: contract tests and gates |
+| `scute-hexagon` | Target Java domain shape: kernel, ports, adapters, ArchUnit gate |
+| `scute-migrate-domain` | Converting the Spring slice behind an island (orchestrator step) |
+| `sdui-verify` | Before finishing: contract tests and gates, UI and domain |
 
 ### Agents
 
-Used from the planner and orchestrator via Task: `map-domains`, `inventory-ui`, `compose-screen`, `mount-host`.
+Used from the planner and orchestrator via Task: `map-domains`, `inventory-ui`, `compose-screen`, `mount-host`, and for the domain track `inventory-domain`, `hexagon-slice`.
 
 ### Hooks
 
 Plugin hooks live in `hooks/hooks.json` with their scripts in `scripts/` — that is the path plugin installation reads. A plugin-root `hooks.json`, or a `.cursor/hooks.json` inside the plugin, is **not** loaded.
 
-- `afterFileEdit` — if a composer/registry file was edited, remind the agent to validate trees
-- `stop` — if those files were in play, remind `sdui-verify`
+- `afterFileEdit` — composer/registry edits get a `validateScreen` reminder; `.java` files in a `domain`, `application`, `adapter`, or `hexagon` package get the ArchUnit and contract-freeze reminder
+- `stop` — if either kind of file was in play, remind `sdui-verify`
 
 Both fail open: bad JSON or a crash prints `{}` and never blocks the user. Matching is path-based, so prose that merely mentions a composer does not trigger them.
 

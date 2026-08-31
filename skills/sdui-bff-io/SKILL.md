@@ -27,7 +27,7 @@ onPress: {
 
 - Validate email/sku/qty (or the customer’s command shape) before calling domain
 - Map string quantities from inputs to the domain type
-- Translate ProblemDetail/`detail` into `{ error: string }` so the renderer can toast
+- Translate ProblemDetail/`detail` into `{ error: string }` so the renderer can toast — a Scute-converted domain emits exactly that shape from `HexagonRestExceptionHandler`
 - 502 if the domain API is unreachable
 - Optional GET proxy for the same resource if the host already rewrote those paths
 
@@ -40,6 +40,8 @@ The browser must not call the domain API directly. Options:
 - Existing customer BFF: keep its public path; put that path in the screen JSON
 
 Next rewrite is one shape. Prefer the customer’s existing BFF if they have one.
+
+The BFF's downstream target does not move when a domain becomes a hexagon: it still POSTs the same domain path, now served by `adapter/in/web` in front of an inbound port.
 
 ## Contract
 

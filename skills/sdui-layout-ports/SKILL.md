@@ -36,7 +36,9 @@ type OrdersPort = { list: () => Promise<Order[]> };
 type AppPorts = { catalog: CatalogPort; orders: OrdersPort };
 ```
 
-HTTP adapter (customer origin, not hardcoded Scute) implements those ports. GET only.
+HTTP adapter (customer origin, not a hardcoded sample origin) implements those ports. GET only.
+
+If that domain was converted with `scute-migrate-domain`, the adapter's target is the hexagon's `adapter/in/web` — same origin, same paths. Converting a domain never edits a composer.
 
 ## Registry
 
